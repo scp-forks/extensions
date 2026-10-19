@@ -5,6 +5,7 @@ import { CSVPrompt, Model, ModelHook, ReasoningEffort } from "../../type";
 import { parse } from "csv-parse/sync";
 import { useCallback, useState } from "react";
 import { getConfiguration } from "../../hooks/useChatGPT";
+import { withSelectedOption } from "../../hooks/useModel";
 
 export const ModelForm = (props: { model?: Model; use: { models: ModelHook }; name?: string }) => {
   const { use, model } = props;
@@ -70,7 +71,7 @@ export const ModelForm = (props: { model?: Model; use: { models: ModelHook }; na
     },
   });
 
-  const MODEL_OPTIONS = use.models.option;
+  const MODEL_OPTIONS = withSelectedOption(use.models.option, model?.option);
 
   const { isLoading, data } = useFetch<CSVPrompt[]>(
     "https://raw.githubusercontent.com/awesome-chatgpt-prompts/awesome-chatgpt-prompts-github/awesome-chatgpt-prompts/prompts.csv",

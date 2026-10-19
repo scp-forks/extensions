@@ -184,6 +184,23 @@ export function useCommand(): CommandHook {
   );
 }
 
+// Inverse of mapCommandToModel, used to recover AI commands from a Models export.
+// Models don't store contentSource/isDisplayInput, so built-ins keep their defaults and
+// custom commands fall back to selected text.
+export function mapModelToCommand(model: Pick<Model, "id" | "name" | "prompt" | "option" | "temperature">): Command {
+  const id = model.id.slice(`${COMMAND_MODEL_PREFIX}-`.length);
+  const builtIn: Command | undefined = DEFAULT_COMMANDS[id];
+  return {
+    id,
+    name: model.name,
+    prompt: model.prompt,
+    model: model.option,
+    temperature: model.temperature,
+    contentSource: builtIn?.contentSource ?? "selectedText",
+    isDisplayInput: builtIn?.isDisplayInput ?? true,
+  };
+}
+
 export function mapCommandToModel(command: Command): Model {
   return {
     id: `${COMMAND_MODEL_PREFIX}-${command.id}`,

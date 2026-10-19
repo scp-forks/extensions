@@ -44,7 +44,8 @@ export default function Model() {
                 moduleName="Models"
                 onSubmit={async (file) => {
                   ImportData<ModelType>("models", file).then((data) => {
-                    models.setModels(data.reduce((acc, model) => ({ ...acc, [model.id]: model }), {}));
+                    // Exports are a Record keyed by id (older ones were arrays); Object.values handles both
+                    models.setModels(Object.values(data).reduce((acc, model) => ({ ...acc, [model.id]: model }), {}));
                   });
                 }}
               />,

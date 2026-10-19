@@ -3,7 +3,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import say from "say";
 import { v4 as uuidv4 } from "uuid";
 import { Chat, ChatHook, Model } from "../type";
-import { buildUserMessage, chatTransformer } from "../utils";
+import { buildUserMessage, chatTransformer, normalizeDashes } from "../utils";
 import { useAutoTTS } from "./useAutoTTS";
 import { getConfiguration, useChatGPT } from "./useChatGPT";
 import { useHistory } from "./useHistory";
@@ -133,13 +133,15 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
 
       if (useStream) {
         const stream = res as Stream<ChatCompletionChunk>;
+        let rawAnswer = "";
 
         for await (const chunk of stream) {
           try {
             const content = chunk.choices[0]?.delta?.content;
 
             if (content) {
-              chat.answer += chunk.choices[0].delta.content;
+              rawAnswer += content;
+              chat.answer = normalizeDashes(rawAnswer);
               setStreamData({ ...chat, answer: chat.answer });
             }
           } catch (error) {
@@ -163,7 +165,7 @@ export function useChat<T extends Chat>(props: T[]): ChatHook {
         }, 5);
       } else {
         const completion = res as ChatCompletion;
-        chat = { ...chat, answer: completion.choices.map((x) => x.message)[0]?.content ?? "" };
+        chat = { ...chat, answer: normalizeDashes(completion.choices.map((x) => x.message)[0]?.content ?? "") };
       }
       if (isAutoTTS) {
         say.stop();

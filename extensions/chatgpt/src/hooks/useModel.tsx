@@ -20,6 +20,13 @@ export const DEFAULT_MODEL: Model = {
   vision: false,
 };
 
+// The API model list loads asynchronously, and a Raycast dropdown whose value isn't among its items
+// silently switches to the first item - so an edit form would save that instead of the stored model.
+// Keep the stored model selectable from the first render.
+export function withSelectedOption(options: Model["option"][], selected?: Model["option"]): Model["option"][] {
+  return selected && !options.includes(selected) ? [selected, ...options] : options;
+}
+
 const REASONING_EFFORT_OPTIONS: ReasoningEffort[] = ["none", "low", "medium", "high"];
 
 function isReasoningEffort(value: unknown): value is ReasoningEffort {

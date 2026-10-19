@@ -1,10 +1,10 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "chatgpt",
-  "title": "ChatGPT",
+  "name": "shaun-gpt",
+  "title": "Shaun GPT",
   "description": "Interact with OpenAI's ChatGPT directly from your command bar",
   "icon": "icon.png",
-  "author": "abielzulio",
+  "author": "shaun",
   "contributors": [
     "erodactyl",
     "pernielsentikaer",
@@ -51,42 +51,36 @@
     {
       "name": "ask",
       "title": "Ask Question",
-      "subtitle": "ChatGPT",
       "description": "Ask ChatGPT via Raycast",
       "mode": "view"
     },
     {
       "name": "saved",
       "title": "Saved Answers",
-      "subtitle": "ChatGPT",
       "description": "Collection of your saved answer",
       "mode": "view"
     },
     {
       "name": "history",
       "title": "History",
-      "subtitle": "ChatGPT",
       "description": "Collection of your recent answer",
       "mode": "view"
     },
     {
       "name": "conversation",
       "title": "Conversations",
-      "subtitle": "ChatGPT",
       "description": "Collection of your recent conversation",
       "mode": "view"
     },
     {
       "name": "model",
       "title": "Models",
-      "subtitle": "ChatGPT",
       "description": "Collection of your custom and default model",
       "mode": "view"
     },
     {
       "name": "summarize",
       "title": "Summarize Website",
-      "subtitle": "ChatGPT",
       "description": "Summarize Website and YouTube video",
       "mode": "view",
       "preferences": [

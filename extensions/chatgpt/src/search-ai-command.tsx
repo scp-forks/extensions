@@ -1,11 +1,24 @@
-import { Action, ActionPanel, Icon, LaunchType, List, useNavigation } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Icon,
+  LaunchType,
+  List,
+  Toast,
+  confirmAlert,
+  showToast,
+  useNavigation,
+} from "@raycast/api";
+import { readFile } from "fs/promises";
 import { useState } from "react";
 import { DestructiveAction } from "./actions";
-import { Command, CommandHook } from "./type";
+import { Command, CommandHook, Model } from "./type";
 import packageJson from "../package.json";
-import { DEFAULT_COMMANDS, useCommand } from "./hooks/useCommand";
+import { COMMAND_MODEL_PREFIX, DEFAULT_COMMANDS, mapModelToCommand, useCommand } from "./hooks/useCommand";
 import { CommandForm, iconsByContentSource } from "./views/command/from";
 import CommandView, { CommandLaunchProps } from "./views/command/command-view";
+import { ExportData } from "./utils/import-export";
+import { ImportForm } from "./views/import-form";
 
 export default function EntryPoint(props: CommandLaunchProps) {
   const requestModelId = props.launchContext?.commandId;
@@ -72,6 +85,21 @@ function SearchAiCommand() {
               packageJson.name
             }/search-ai-command?context=${encodeURIComponent(JSON.stringify({ commandId: cmd.id }))}`,
           }}
+        />
+      </ActionPanel.Section>
+
+      <ActionPanel.Section title="Import/Export">
+        <Action
+          title={"Export AI Commands"}
+          icon={Icon.Upload}
+          onAction={() => ExportData(commands.data, "AI Commands")}
+        />
+        <Action
+          title={"Import AI Commands"}
+          icon={Icon.Download}
+          onAction={() =>
+            navigation.push(<ImportForm moduleName="AI Commands" onSubmit={(file) => importCommands(file, commands)} />)
+          }
         />
       </ActionPanel.Section>
 
@@ -173,6 +201,46 @@ function SearchAiCommand() {
       )}
     </List>
   );
+}
+
+// Accepts an "Export AI Commands" file, or a "Export Models" file, in which AI commands are
+// mirrored as models with id `command-<commandId>`. Merges into existing commands, keeping IDs
+// so existing quicklinks keep working.
+async function importCommands(file: string, commands: CommandHook) {
+  try {
+    const parsed: Record<string, Command | Model> | (Command | Model)[] = JSON.parse((await readFile(file)).toString());
+    const imported = Object.values(parsed).flatMap((entry): Command[] => {
+      if ("contentSource" in entry) return [entry];
+      if (entry.id?.startsWith(`${COMMAND_MODEL_PREFIX}-`)) return [mapModelToCommand(entry)];
+      return [];
+    });
+
+    if (imported.length === 0) {
+      await showToast({ title: "No AI commands found", message: file, style: Toast.Style.Failure });
+      return;
+    }
+
+    const confirmed = await confirmAlert({
+      title: `Import ${imported.length} AI commands?`,
+      message: `${imported.map((cmd) => cmd.name).join(", ")}\n\nCommands with the same ID will be overwritten.`,
+      icon: Icon.Download,
+      primaryAction: { title: "Import" },
+    });
+    if (!confirmed) return;
+
+    await commands.setCommand({ ...commands.data, ...Object.fromEntries(imported.map((cmd) => [cmd.id, cmd])) });
+    await showToast({
+      title: `Imported ${imported.length} AI commands`,
+      message: "Check the content source of each custom command",
+      style: Toast.Style.Success,
+    });
+  } catch (error) {
+    await showToast({
+      title: "Failed to import AI commands",
+      message: error instanceof Error ? error.message : String(error),
+      style: Toast.Style.Failure,
+    });
+  }
 }
 
 function resetToDefaults(cmd: Command, defaultCommands: Record<string, Command>, commands: CommandHook) {

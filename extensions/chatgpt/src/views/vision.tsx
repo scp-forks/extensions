@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 import { useChatGPT } from "../hooks/useChatGPT";
 import { AskImageProps, Model } from "../type";
-import { toUnit } from "../utils";
+import { normalizeDashes, toUnit } from "../utils";
 import { LoadFrom, loadFromClipboard, loadFromFinder } from "../utils/load";
 import { countImageTokens, countToken, estimateImagePrice, estimatePrice } from "../utils/token";
 
@@ -125,8 +125,9 @@ export function VisionView(props: AskImageProps) {
     let response_ = "";
     function appendResponse(part: string) {
       response_ += part;
-      setResponse(response_);
-      setResponseTokenCount(countToken(response_));
+      const cleaned = normalizeDashes(response_);
+      setResponse(cleaned);
+      setResponseTokenCount(countToken(cleaned));
     }
 
     if (resp instanceof Stream) {

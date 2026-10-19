@@ -33,6 +33,16 @@ function limitConversationLength(chats: Chat[]) {
   return newChats;
 }
 
+// Em-style dashes (em, horizontal bar, two/three-em, small/vertical em) separate clauses, so they
+// become a spaced hyphen ("button\u2014it" -> "button - it"), absorbing any spaces already around them.
+const EM_DASHES = /[ \t]*[\u2014\u2015\u2e3a\u2e3b\ufe31\ufe58]+[ \t]*/gu;
+// Every other Unicode dash (\p{Pd}: en, figure, hyphens, small/fullwidth forms, ...) and the minus
+// sign map 1:1 to "-", keeping the model's spacing ("10\u201320" -> "10-20", "a \u2013 b" -> "a - b").
+const OTHER_DASHES = /[\p{Pd}\u2212]/gu;
+
+// Run on the whole text, not on stream chunks: a space and a dash can arrive in separate chunks.
+export const normalizeDashes = (text: string): string => text.replace(EM_DASHES, " - ").replace(OTHER_DASHES, "-");
+
 export function chatTransformer(chat: Chat[], prompt: string): Message[] {
   const messages: Message[] = [];
   if (prompt !== "") {

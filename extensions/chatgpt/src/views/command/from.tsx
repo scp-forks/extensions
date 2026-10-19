@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Command, CommandContentSource, CommandHook } from "../../type";
 
 import { getConfiguration } from "../../hooks/useChatGPT";
-import { useModel } from "../../hooks/useModel";
+import { useModel, withSelectedOption } from "../../hooks/useModel";
 
 export const CommandForm = (props: {
   cmd?: Command;
@@ -92,7 +92,7 @@ export const CommandForm = (props: {
         <Form.TextField title="Model" placeholder="Custom model" {...itemProps.model} />
       ) : (
         <Form.Dropdown title="Model" placeholder="Choose model" {...itemProps.model}>
-          {models.option.map((option) => (
+          {withSelectedOption(models.option, cmd?.model).map((option) => (
             <Form.Dropdown.Item value={option} title={option} key={option} />
           ))}
         </Form.Dropdown>
