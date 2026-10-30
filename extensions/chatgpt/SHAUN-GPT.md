@@ -1,6 +1,6 @@
 # Shaun GPT
 
-My personal fork of the Raycast [ChatGPT extension](https://www.raycast.com/abielzulio/chatgpt) (`abielzulio/chatgpt`). It installs locally as **Shaun GPT** (`shaun-gpt`, author `shaun`) from the `scp-forks/extensions` repo. No Raycast account is needed.
+My personal fork of the Raycast [ChatGPT extension](https://www.raycast.com/abielzulio/chatgpt) (`abielzulio/chatgpt`). It installs locally as **Shaun GPT** (`shaun-gpt`, author `shaun`) from the `shaun-gpt` branch of `scp-forks/extensions`. No Raycast account is needed.
 
 ## What's different from upstream
 
