@@ -56,3 +56,7 @@ git fetch origin && git merge origin/main         # on this branch
 ```
 
 Expect occasional conflicts only in `package.json`, `useChat.tsx`, `vision.tsx` and the two edit forms. Then rebuild.
+
+## Backup of my AI commands
+
+`backup/ai-commands.json` is an **Export AI Commands** snapshot. To restore it: Search AI Command → ⌘K → **Import AI Commands** → pick the file. To refresh it, export again and copy the new file from `~/Downloads` over it, then commit.
